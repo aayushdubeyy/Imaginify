@@ -1,16 +1,15 @@
 /* eslint-disable camelcase */
+import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
 import { clerkClient } from "@clerk/nextjs";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 
-import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
-
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-
+  console.log(WEBHOOK_SECRET);
   if (!WEBHOOK_SECRET) {
     throw new Error(
       "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
@@ -70,7 +69,7 @@ export async function POST(req: Request) {
       lastName: last_name,
       photo: image_url,
     };
-
+    console.log("user", user);
     const newUser = await createUser(user);
 
     // Set public metadata
@@ -103,6 +102,7 @@ export async function POST(req: Request) {
 
   // DELETE
   if (eventType === "user.deleted") {
+    console.log("HIIIi");
     const { id } = evt.data;
 
     const deletedUser = await deleteUser(id!);
